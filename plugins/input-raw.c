@@ -362,7 +362,6 @@ static int ts_input_read(struct tslib_module_info *inf,
 		while (total < nr) {
 			ret = read(ts->fd, &ev, sizeof(struct input_event));
 			if (ret < (int)sizeof(struct input_event)) {
-				total = -1;
 				break;
 			}
 
