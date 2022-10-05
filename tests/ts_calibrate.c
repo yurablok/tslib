@@ -241,6 +241,8 @@ static void help(void)
 	printf("\n");
 	printf("Usage: ts_calibrate [-r <rotate_value>] [--version]\n");
 	printf("\n");
+	printf("-d --device\n");
+	printf("                       (optional) input device filepath\n");
 	printf("-r --rotate\n");
 	printf("        <rotate_value> 0 ... no rotation; 0 degree (default)\n");
 	printf("                       1 ... clockwise orientation; 90 degrees\n");
@@ -285,6 +287,7 @@ int main(int argc, char **argv)
 	int validate_timeout = 5;
 	unsigned int validate_loops = 0;
 	short validate_only = 0;
+	const char* input_device = NULL;
 
 	signal(SIGSEGV, sig);
 	signal(SIGINT, sig);
@@ -293,6 +296,7 @@ int main(int argc, char **argv)
 	while (1) {
 		const struct option long_options[] = {
 			{ "help",         no_argument,       NULL, 'h' },
+			{ "device",       no_argument,		 NULL, 'd' },
 			{ "rotate",       required_argument, NULL, 'r' },
 			{ "version",      no_argument,       NULL, 'v' },
 			{ "min_interval", required_argument, NULL, 't' },
@@ -303,7 +307,7 @@ int main(int argc, char **argv)
 		};
 
 		int option_index = 0;
-		int c = getopt_long(argc, argv, "hvr:t:cb:l:s:", long_options, &option_index);
+		int c = getopt_long(argc, argv, "hvr:d:t:cb:l:s:", long_options, &option_index);
 
 		errno = 0;
 		if (c == -1)
@@ -317,6 +321,10 @@ int main(int argc, char **argv)
 		case 'v':
 			print_version();
 			return 0;
+
+		case 'd':
+			input_device = optarg;
+			break;
 
 		case 'r':
 			/* extern in fbutils.h */
@@ -382,7 +390,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	ts = ts_setup(NULL, 0);
+	ts = ts_setup(input_device, 0);
 	if (!ts) {
 		perror("ts_setup");
 		exit(1);
